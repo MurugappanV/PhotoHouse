@@ -1,0 +1,1 @@
+export { ModalComp as Modal } from './Modal'
