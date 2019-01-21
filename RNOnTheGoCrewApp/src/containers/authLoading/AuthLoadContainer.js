@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, NativeModules } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Actions } from "../../redux";
@@ -29,6 +29,7 @@ class AuthLoadContainer extends PureComponent<Props> {
 			.catch(() => {
 				props.navigation.navigate("Login");
 			});
+		NativeModules.Device.getDeviceName((err, name) => console.log(err, name));
 	}
 
 	render() {
