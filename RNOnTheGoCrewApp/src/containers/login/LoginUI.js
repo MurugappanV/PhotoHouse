@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextField } from "react-native-material-textfield";
+import BlurOverlay from "react-native-blur-overlay";
 import { Button, AlertComp } from "../../components";
 import { Header } from "../header";
 import { ScalePerctFullHeight, ScalePerctFullWidth } from "../../asset";
@@ -31,7 +32,7 @@ export default class LoginUI extends PureComponent<Props> {
 			onAlertClose,
 		} = this.props;
 		return (
-			<View>
+			<View style={styles.container}>
 				<Header title="Login" />
 				<AlertComp
 					alertMsg={alertMsg}
@@ -59,11 +60,20 @@ export default class LoginUI extends PureComponent<Props> {
 						onChangeText={pass => onPasswordInputChange(pass)}
 					/>
 				</View>
-				<Button
-					style={styles.loginBtn}
-					title="LOGIN"
-					onPress={onLogin}
-					loading={loading}
+				<Button style={styles.loginBtn} title="LOGIN" onPress={onLogin} loading={loading} />
+				<BlurOverlay
+					radius={10}
+					downsampling={4}
+					brightness={0}
+					onPress={() => {}}
+					customStyles={{
+						alignItems: "center",
+						justifyContent: "center",
+						backgroundColor: "rgba(255,255,255,0.2)",
+					}}
+					style={{
+						elevation: 10,
+					}}
 				/>
 			</View>
 		);
@@ -73,6 +83,9 @@ export default class LoginUI extends PureComponent<Props> {
 LoginUI.defaultProps = {};
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
 	loginBtn: {
 		alignSelf: "center",
 		width: "40%",

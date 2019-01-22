@@ -23,6 +23,6 @@
 				"ExportDeclaration": { "multiline": true, "minProperties": 3 }
 			}
 		],
-		"linebreak-style": ["error", "windows"]
+		"linebreak-style": 0
 	}
 }

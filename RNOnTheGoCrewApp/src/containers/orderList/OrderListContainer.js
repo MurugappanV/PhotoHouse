@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { Linking } from "react-native";
 import { bindActionCreators } from "redux";
+import { closeOverlay, openOverlay } from "react-native-blur-overlay";
 import OrderListUI from "./OrderListUI";
 import { setUserIdStorage } from "../../storage";
 import { Actions } from "../../redux";
@@ -74,8 +75,10 @@ class OrderListContainer extends PureComponent<Props> {
 				clearOrderListAction();
 				clearUserIdAction();
 				navigation.navigate("Login");
+				closeOverlay();
 			},
 		});
+		openOverlay();
 	};
 
 	onCall = (phoneNo: string) => {
@@ -98,11 +101,13 @@ class OrderListContainer extends PureComponent<Props> {
 				}
 			},
 		});
+		openOverlay();
 	};
 
 	onDeliveredSuccess = () => {
 		this.setState({ alertMsg: null, delevering: false });
 		this.fetchOrders();
+		closeOverlay();
 	};
 
 	onDeliveredFailure = (message: string) => {
@@ -123,6 +128,7 @@ class OrderListContainer extends PureComponent<Props> {
 
 	onAlertCancel = () => {
 		this.setState({ alertMsg: null, alertDigMsg: null });
+		closeOverlay();
 	};
 
 	onFetchRefresh = () => {

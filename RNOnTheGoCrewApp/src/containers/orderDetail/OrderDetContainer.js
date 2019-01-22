@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import { Linking } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { closeOverlay, openOverlay } from "react-native-blur-overlay";
 import OrderDetUI from "./OrderDetUI";
 import { setUserIdStorage } from "../../storage";
 import { Actions } from "../../redux";
@@ -50,6 +51,7 @@ class OrderDetContainer extends PureComponent<Props> {
 		this.setState({
 			alertDigMsg: `Order details can't be fetched ${message}`,
 		});
+		openOverlay();
 	};
 
 	onOrderDetFetchError = (error: any) => {
@@ -59,6 +61,7 @@ class OrderDetContainer extends PureComponent<Props> {
 				? "Order details can't be fetched, Please check your internet connection"
 				: "Order details can't be fetched, Some error occured, please try again later",
 		});
+		openOverlay();
 	};
 
 	onLogout = () => {
@@ -73,6 +76,7 @@ class OrderDetContainer extends PureComponent<Props> {
 				navigation.navigate("Login");
 			},
 		});
+		openOverlay();
 	};
 
 	onCall = (phoneNo: string) => {
@@ -95,10 +99,12 @@ class OrderDetContainer extends PureComponent<Props> {
 				}
 			},
 		});
+		openOverlay();
 	};
 
 	onDeliveredSuccess = () => {
 		this.setState({ alertMsg: null, delevering: false });
+		closeOverlay();
 		const { fetchOrders } = this.state;
 		fetchOrders();
 		const { navigation } = this.props;
@@ -123,6 +129,7 @@ class OrderDetContainer extends PureComponent<Props> {
 
 	onAlertCancel = () => {
 		this.setState({ alertMsg: null, alertDigMsg: null });
+		closeOverlay();
 	};
 
 	render() {

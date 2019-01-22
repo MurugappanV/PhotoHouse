@@ -6,7 +6,7 @@ const BASE_URL_UAT = "https://servicesbr.uat.mcdelivery.co.in/";
 
 export const BaseAxiosInstance = axios.create({
 	baseURL: BASE_URL_UAT,
-	timeout: 600000,
+	timeout: 60000,
 	headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" },
 });
 

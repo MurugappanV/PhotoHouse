@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { closeOverlay, openOverlay } from "react-native-blur-overlay";
 import LoginUI from "./LoginUI";
 import { LoginApi, setCookie } from "../../service";
 // import { AlertComp } from "../../components";
@@ -35,13 +36,7 @@ class LoginContainer extends PureComponent<Props> {
 	onLogin = () => {
 		const { employeeId, password } = this.state;
 		this.setState({ loading: true });
-		LoginApi(
-			employeeId,
-			password,
-			this.onLoginSuccess,
-			this.onLoginFailure,
-			this.onLoginError,
-		);
+		LoginApi(employeeId, password, this.onLoginSuccess, this.onLoginFailure, this.onLoginError);
 	};
 
 	onLoginSuccess = (userId: Object) => {
@@ -58,6 +53,7 @@ class LoginContainer extends PureComponent<Props> {
 			message = "Please check your employee ID and password";
 		}
 		this.setState({ loading: false, alertTitle: "Login Failed", alertMsg: message });
+		openOverlay();
 		// AlertComp("Login Failed", message);
 	};
 
@@ -69,6 +65,7 @@ class LoginContainer extends PureComponent<Props> {
 				? "Please check your internet connection"
 				: "Some error occured, please try again later",
 		});
+		openOverlay();
 		// AlertComp("Login error", "Some error occured, Please try again");
 	};
 
@@ -77,6 +74,7 @@ class LoginContainer extends PureComponent<Props> {
 			alertTitle: null,
 			alertMsg: null,
 		});
+		closeOverlay();
 	};
 
 	render() {

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
+import BlurOverlay from "react-native-blur-overlay";
 import { AlertComp } from "../../components";
 import { Header } from "../header";
 import ListItemUI from "./ListItemUI";
@@ -87,7 +88,7 @@ export default function OrderListUI(props: Props) {
 				cancelBtnText={null}
 			/>
 			<FlatList
-				data={orders}
+				data={dummyData}
 				renderItem={({ item }) => (
 					<ListItemUI
 						{...item}
@@ -104,6 +105,20 @@ export default function OrderListUI(props: Props) {
 				ListEmptyComponent={() => renderEmpty(loading, noRecordText)}
 				onRefresh={onFetchRefresh}
 				refreshing={refreshing}
+			/>
+			<BlurOverlay
+				radius={10}
+				downsampling={4}
+				brightness={0}
+				onPress={() => {}}
+				customStyles={{
+					alignItems: "center",
+					justifyContent: "center",
+					backgroundColor: "rgba(255,255,255,0.2)",
+				}}
+				style={{
+					elevation: 10,
+				}}
 			/>
 		</View>
 	);

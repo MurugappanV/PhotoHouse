@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 	container: {
 		width: ScalePerctFullWidth(100),
 		height: ScalePerctFullHeight(100),
-		backgroundColor: "rgba(255,255,255,0.4)",
+		backgroundColor: "transparent", // rgba(255,255,255,0.4)
 		justifyContent: "center",
 		alignItems: "center",
 	},

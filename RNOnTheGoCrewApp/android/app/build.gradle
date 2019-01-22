@@ -148,6 +148,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-blur-overlay')
     compile project(':react-native-gesture-handler')
     compile project(':react-native-splash-screen')
     implementation fileTree(dir: "libs", include: ["*.jar"])

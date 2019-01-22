@@ -1,5 +1,6 @@
 import React from "react";
 import { View, ScrollView, Text, StyleSheet, ActivityIndicator, FlatList } from "react-native";
+import BlurOverlay from "react-native-blur-overlay";
 import { Button, AlertComp } from "../../components";
 import { ScalePerctFullWidth, Colors } from "../../asset";
 import { Header } from "../header";
@@ -178,6 +179,20 @@ export default function OrderDetUI(props: Props) {
 			{renderTitle(getDateTimeString(OrderDate, OrdDate), OrderNumber)}
 			{renderOrderSummary(loading, details)}
 			{renderOrderItem(name, vehilceNo, phoneNo, orderId, onCall, onDelivered)}
+			<BlurOverlay
+				radius={10}
+				downsampling={4}
+				brightness={0}
+				onPress={() => {}}
+				customStyles={{
+					alignItems: "center",
+					justifyContent: "center",
+					backgroundColor: "rgba(255,255,255,0.2)",
+				}}
+				style={{
+					elevation: 10,
+				}}
+			/>
 		</View>
 	);
 }
