@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
-import { Linking } from "react-native";
+import { Linking, NativeModules } from "react-native";
 import { bindActionCreators } from "redux";
 import { closeOverlay, openOverlay } from "react-native-blur-overlay";
 import OrderListUI from "./OrderListUI";
@@ -28,6 +28,8 @@ class OrderListContainer extends PureComponent<Props> {
 			noRecordText: "No orders found",
 			onAlertConfirm: () => {},
 		};
+
+		NativeModules.Device.getDeviceName((err, name) => console.log(err, name));
 	}
 
 	componentDidMount() {
