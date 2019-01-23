@@ -6,7 +6,7 @@
  */
 import React, { PureComponent } from "react";
 import { StyleSheet, Image } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker } from "react-native-maps";
 import { Images, DefaultValues, ScaleSampDesgWidth } from "../../asset";
 
 type Props = {
