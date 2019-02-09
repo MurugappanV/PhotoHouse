@@ -40,28 +40,24 @@ export class PlaceMap extends PureComponent<Props, State> {
 			atms: [],
 			filter: DefaultValues.All,
 			showFilter: false,
+			selectedIndex: null
 		};
 	}
 
 	componentDidMount = () => {
-		console.log("position 0", this.state.userLatitude + " " + this.state.userLongitude);
 		this.fetchPlaces();
 		navigator.geolocation.getCurrentPosition(
 			position => {
-				console.log("position 1", position);
 				if (position.coords.latitude) {
 					this.setState({ userLatitude: position.coords.latitude, userLongitude: position.coords.longitude });
-					this.fetchPlaces();
 				}
 			},
 			error => console.log("position", error.message),
 			{ enableHighAccuracy: true },
 		);
 		this.watchID = navigator.geolocation.watchPosition(position => {
-			console.log("position 2", position);
 			if (position.coords.latitude) {
 				this.setState({ userLatitude: position.coords.latitude, userLongitude: position.coords.longitude });
-				this.fetchPlaces();
 			}
 		});
 	};
@@ -85,7 +81,6 @@ export class PlaceMap extends PureComponent<Props, State> {
 	};
 
 	onDataFetched = (type, response) => {
-		console.log("data resp ", type);
 		if (type == DefaultValues.BANK) {
 			this.setState({ banks: response });
 		} else {
@@ -121,9 +116,13 @@ export class PlaceMap extends PureComponent<Props, State> {
 				id: atm.place_id,
 			}),
 		);
-		console.log("markers ", markers);
+		markers.len > 0 && this.setCardIndex(markers[0].id)
 		return markers;
 	};
+
+	setCardIndex = (index) => {
+		this.setState({selectedIndex: index})
+	}
 
 	getCards = (banks, atms) => {
 		let cards = [];
@@ -148,7 +147,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 
 	onChangeSearchText = (text: string) => {
 		if (this.state.searchKey != text) {
-			this.setState({ searchKey: text }, this.fetchPlaces());
+			this.setState({ searchKey: text });
 		}
 	};
 
@@ -163,11 +162,11 @@ export class PlaceMap extends PureComponent<Props, State> {
 					selectionColor="black"
 					returnKeyType={"search"}
 					placeholder={"Search for ATM/Bank"}
-					textContentType={"text"}
+					textContentType={"sublocality"}
 					secureTextEntry={false}
 					placeholderTextColor={Colors.bodySecondaryLight}
 					value={this.state.searchKey}
-					onSubmitEditing={() => {}}
+					onSubmitEditing={() => this.fetchPlaces()}
 					autoFocus={false}
 				/>
 				<View style={styles.seperatorLine} />
@@ -179,8 +178,9 @@ export class PlaceMap extends PureComponent<Props, State> {
 	};
 
 	onFilterChange = (selectedFilter: string) => {
+		console.log("filter -- " , selectedFilter)
 		if (this.state.filter != selectedFilter) {
-			this.setState({ filter: selectedFilter, showFilter: false }, this.fetchPlaces());
+			this.setState({ filter: selectedFilter, showFilter: false });
 		} else {
 			this.setState({ showFilter: false });
 		}
@@ -228,8 +228,17 @@ export class PlaceMap extends PureComponent<Props, State> {
 		);
 	};
 
+	componentDidUpdate(prevProps, prevState) {
+		const { filter, userLatitude, userLongitude } = this.state;
+		if(filter != prevState.filter 
+			|| userLatitude != prevState.userLatitude 
+			|| userLongitude != prevState.userLongitude) {
+				this.fetchPlaces();
+		}
+	}
+
 	render() {
-		const { userLatitude, userLongitude, banks, atms } = this.state;
+		const { userLatitude, userLongitude, banks, atms, selectedIndex } = this.state;
 		return (
 			<View style={styles.container}>
 				<StatusBarComp />
@@ -237,16 +246,17 @@ export class PlaceMap extends PureComponent<Props, State> {
 					region={{
 						latitude: userLatitude,
 						longitude: userLongitude,
-						latitudeDelta: 0.01,
-						longitudeDelta: 0.005,
+						latitudeDelta: 0.005,
+						longitudeDelta: 0.003,
 					}}
 					markers={this.getMarkers(userLatitude, userLongitude, banks, atms)}
+					setCardIndex={this.setCardIndex}
 				/>
 				{this.renderPicker()}
 				{this.renderSearchBar()}
 				<View style={{ flex: 100 }} />
 				{(banks.length > 0 || atms.length > 0) && (
-					<CardViewComp onPress={this.onCardSelect} entries={this.getCards(banks, atms)} />
+					<CardViewComp onPress={this.onCardSelect} entries={this.getCards(banks, atms)} setCardIndex={this.setCardIndex} selectedIndex={selectedIndex}/>
 				)}
 			</View>
 		);

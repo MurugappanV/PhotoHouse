@@ -5,8 +5,8 @@
  * @flow
  */
 import React, { PureComponent } from "react";
-import { StyleSheet, Image } from "react-native";
-import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker } from "react-native-maps";
+import { StyleSheet, Image, TouchableOpacity } from "react-native";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { Images, DefaultValues, ScaleSampDesgWidth } from "../../asset";
 
 type Props = {
@@ -22,48 +22,51 @@ type State = {
 export class MapViewComp extends PureComponent<Props, State> {
 	constructor(props: Props) {
 		super(props);
-		this.state = { region: props.region, markers: props.markers };
+		// this.state = { region: props.region, markers: props.markers };
 	}
 
-	static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-		if (nextProps.markers != prevState.markers) {
-			return { markers: nextProps.markers };
-		}
-		return null;
-	}
+	// static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+	// 	if (nextProps.markers != prevState.markers) {
+	// 		return { markers: nextProps.markers };
+	// 	}
+	// 	return null;
+	// }
 
 	onRegionChange = (region: any) => {
 		this.setState({ region });
 	};
 
-	renderMarkers = (markers: Array<Object>) => {
-		return this.state.markers.map(marker => (
+	renderMarkers = (markers: Array<Object>, setCardIndex) => {
+		return markers.map(marker => (
 			<Marker key={marker.id} showsUserLocation={true} coordinate={marker.latlng}>
-				<Image
-					style={styles.markerImg}
-					source={
-						marker.type == DefaultValues.ATM
-							? Images.mapAtmImg
-							: marker.type == DefaultValues.USER
-							? Images.mapUserImg
-							: Images.mapBankImg
-					}
-					resizeMode={"contain"}
-				/>
+				<TouchableOpacity onPress={() => {setCardIndex(marker.id)}}>
+					<Image
+						style={styles.markerImg}
+						source={
+							marker.type == DefaultValues.ATM
+								? Images.mapAtmImg
+								: marker.type == DefaultValues.USER
+								? Images.mapUserImg
+								: Images.mapBankImg
+						}
+						resizeMode={"contain"}
+					/>
+				</TouchableOpacity>
 			</Marker>
 		));
 	};
 
 	render() {
 		console.log("render map ------------------");
+		const {setCardIndex, region, markers} = this.props;
 		return (
 			<MapView
 				provider={PROVIDER_GOOGLE}
 				style={styles.map}
-				region={this.state.region}
+				region={region}
 				// onRegionChange={this.onRegionChange}
 			>
-				{this.renderMarkers(this.state.markers)}
+				{this.renderMarkers(markers, setCardIndex)}
 			</MapView>
 		);
 	}

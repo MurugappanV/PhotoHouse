@@ -11,6 +11,7 @@ export const Images = {
 	mapBankImg: require("./bank_icn.png"),
 	mapUserImg: require("./place.png"),
 	atmImg: require("./atm1_icn.png"),
+	bankImg: require("./bank_icn.png"),
 	directionImg: require("./direction_icn.png"),
 	filterImg: require("./filter_icn.png"),
 	searchImg: require("./Shape.png"),
