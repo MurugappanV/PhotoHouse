@@ -93,22 +93,28 @@ export class Route extends PureComponent<Props, State> {
 		this.setState({ routes: null, loading: false });
 	};
 
-	getDisplayRoutes = (routes: any) => {
-		if (routes) {
-			return routes.steps.map(step => {
-				const inst = step.html_instructions;
-				return {
-					image: !inst.toLowerCase().includes("turn")
-						? Images.upImg
-						: inst.toLowerCase().includes("left")
-						? Images.leftImg
-						: Images.rightImg,
-					title: this.getDataFromHtml(inst),
-					distance: step.distance.text,
-				};
-			});
+	getListRoutes = (routes: any) => {
+		let listRoute = []
+		try {
+			if (routes && routes.steps && routes.steps.length > 0) {
+				listRoute = routes.steps.map(step => {
+					const inst = step.html_instructions;
+					return {
+						image: !inst.toLowerCase().includes("turn")
+							? Images.upImg
+							: inst.toLowerCase().includes("left")
+							? Images.leftImg
+							: Images.rightImg,
+						title: "this.getDataFromHtml(inst)",
+						distance: step.distance.text,
+					};
+				});
+			}
+		} catch(error) {
+			console.log(error)
 		}
-		return [];
+		console.log("display ", listRoute)
+		return listRoute;
 	};
 
 	getHeader = (routes: any) => {
@@ -127,15 +133,20 @@ export class Route extends PureComponent<Props, State> {
 	};
 
 	getDataFromHtml = (data: string) => {
-		let text = data
-			.replace("<b>", "")
-			.replace("</b>", "")
-			.replace("</div>", "");
-		while (text.indexOf("<div", 0) != -1) {
-			let index = text.indexOf("<div", 0);
-			let endIndex = text.indexOf(">", index);
-			text.replace(text.substring(index, endIndex + 1), ", ");
+		try {
+			let text = data ? data.split("<b>").join('') : "";
+			text = text.split("</b>").join('')
+			text = text.split("</div>").join('')
+			while (text.indexOf("<div", 0) != -1) {
+				let index = text.indexOf("<div", 0);
+				let endIndex = text.indexOf(">", index);
+				text.replace(text.substring(index, endIndex + 1), ", ");
+			}
+			return text
+		} catch(error) {
+			console.log("error", error)
 		}
+		return "";
 	};
 
 	renderHeader = (headerData, navigation) => {
@@ -221,8 +232,8 @@ export class Route extends PureComponent<Props, State> {
 			<View style={styles.footerContainer}>
 				<Image style={styles.footerImg} source={footerData.image} resizeMode={"contain"} />
 				<View style={styles.footerViewContainer}>
-					<Text style={styles.footerTitleText}>{footerData.title}</Text>
-					<Text style={styles.footerAddressText}>{footerData.address}</Text>
+					<Text style={styles.footerTitleText} numberOfLines={1}>{footerData.title}</Text>
+					<Text style={styles.footerAddressText} numberOfLines={2}>{footerData.address}</Text>
 				</View>
 			</View>
 		);
@@ -232,11 +243,12 @@ export class Route extends PureComponent<Props, State> {
 		const { routes, type, name, loading } = this.state;
 		const { navigation } = this.props;
 		console.log("route state", this.state);
+		this.getListRoutes(routes)
 		return (
 			<View style={styles.container}>
 				<StatusBarComp />
 				{this.renderHeader(this.getHeader(routes), navigation)}
-				{this.renderList(this.getDisplayRoutes(routes), loading)}
+				{this.renderList(this.getListRoutes(routes), loading)}
 				{this.renderFooter(this.getFooter(routes, type, name))}
 			</View>
 		);
@@ -262,8 +274,7 @@ const styles = StyleSheet.create({
 		alignSelf: "stretch",
 		justifyContent: "center",
 		alignItems: "center",
-		paddingLeft: ScaleSampDesgWidth(10),
-		paddingRight: ScaleSampDesgWidth(10),
+		padding: ScaleSampDesgWidth(10),
 	},
 	backImg: {
 		width: ScaleMinSampleDesg(20, 20),
@@ -289,7 +300,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	listItemContainer: {
-		paddingTop: ScaleSampDesgHeight(20),
+		paddingVertical: ScaleSampDesgHeight(20),
+		flexDirection: "row",
+		alignItems: "center"
 	},
 	itemImgContainer: {
 		width: ScaleSampDesgWidth(60),
@@ -312,7 +325,8 @@ const styles = StyleSheet.create({
 		color: Colors.bodySecondaryLight,
 	},
 	listSeperator: {
-		width: ScaleSampDesgWidth(360),
+		width: ScaleSampDesgWidth(340),
+		marginHorizontal: ScaleSampDesgWidth(10),
 		borderBottomColor: Colors.bodySecondaryLight,
 		borderBottomWidth: 0.5,
 	},
@@ -336,6 +350,7 @@ const styles = StyleSheet.create({
 		height: ScaleSampDesgHeight(90),
 		flexDirection: "row",
 		alignItems: "center",
+		marginRight: ScaleSampDesgWidth(20)
 	},
 	footerImg: {
 		width: ScaleMinSampleDesg(43, 43),
@@ -344,15 +359,20 @@ const styles = StyleSheet.create({
 		marginRight: ScaleSampDesgWidth(20),
 	},
 	footerViewContainer: {
-		alignSelf: "stretch",
 		paddingTop: ScaleSampDesgHeight(17),
 		alignItems: "flex-start",
+		justifyContent: "flex-start",
+		flexWrap: 'wrap',
+		flex: 1
 	},
 	footerTitleText: {
 		fontSize: 17,
+		flexWrap: 'wrap',
 	},
 	footerAddressText: {
 		fontSize: 14,
 		color: Colors.bodySecondaryLight,
+		flexWrap: 'wrap',
+		flex: 1,
 	},
 });

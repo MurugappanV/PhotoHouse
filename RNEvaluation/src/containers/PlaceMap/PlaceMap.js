@@ -113,9 +113,10 @@ export class PlaceMap extends PureComponent<Props, State> {
 		navigator.geolocation.clearWatch(this.watchID);
 	};
 
-	getMarkers = (userLatitude, userLongitude, banks, atms) => {
+	getMarkers = (banks, atms) => {
 		let markers = [];
-		banks.forEach(bank =>
+		console.log("banks atms ", banks, atms)
+		banks && banks.forEach(bank =>
 			markers.push({
 				latlng: {
 					latitude: bank.geometry.location.lat,
@@ -125,7 +126,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 				id: bank.place_id,
 			}),
 		);
-		atms.forEach(atm =>
+		atms && atms.forEach(atm =>
 			markers.push({
 				latlng: {
 					latitude: atm.geometry.location.lat,
@@ -273,10 +274,10 @@ export class PlaceMap extends PureComponent<Props, State> {
 					region={{
 						latitude: userLatitude,
 						longitude: userLongitude,
-						latitudeDelta: 0.005,
-						longitudeDelta: 0.003,
+						latitudeDelta: 0.01,
+						longitudeDelta: 0.01,
 					}}
-					markers={this.getMarkers(userLatitude, userLongitude, banks, atms)}
+					markers={this.getMarkers(banks, atms)}
 					setCardIndex={this.setCardIndex}
 					selectedIndex={selectedIndex}
 				/>

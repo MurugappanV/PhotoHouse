@@ -43,7 +43,6 @@ export class MapViewComp extends PureComponent<Props, State> {
 					setCardIndex(index);
 				}}
 				key={marker.id}
-				showsUserLocation={true}
 				coordinate={marker.latlng}
 			>
 				<Image
@@ -68,6 +67,11 @@ export class MapViewComp extends PureComponent<Props, State> {
 				provider={PROVIDER_GOOGLE}
 				style={styles.map}
 				region={region}
+				showsUserLocation={true}
+				followsUserLocation={true}
+				showsMyLocationButton={false}
+				showsCompass={false}
+				showsPointsOfInterest={false}
 				// onRegionChange={this.onRegionChange}
 			>
 				{this.renderMarkers(markers, setCardIndex, selectedIndex)}
