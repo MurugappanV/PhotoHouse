@@ -6,7 +6,14 @@
  */
 import React, { PureComponent } from "react";
 import { StyleSheet, Image, View, TouchableOpacity } from "react-native";
-import { Images, Colors, Metrics, DefaultValues, ScaleSampDesgWidth, ScaleSampDesgHeight } from "../../asset";
+import {
+	Images,
+	Colors,
+	Metrics,
+	DefaultValues,
+	ScaleSampDesgWidth,
+	ScaleSampDesgHeight,
+} from "../../asset";
 import { MediumText, SmallText } from "../Texts";
 import Carousel from "react-native-snap-carousel";
 
@@ -32,11 +39,11 @@ export class CardViewComp extends PureComponent<Props, State> {
 	// 	return null;
 	// }
 
-	renderItem = (item, index ) => {
+	renderItem = (item, index) => {
 		return (
 			<TouchableOpacity
 				onPress={() => {
-					this.props.onPress(item.id, item.type);
+					this.props.onPress(item.id, item.type, item.title);
 				}}
 				style={styles.slide}
 			>
@@ -46,11 +53,23 @@ export class CardViewComp extends PureComponent<Props, State> {
 					resizeMode={"contain"}
 				/>
 				<View style={styles.textView}>
-					<MediumText text={item.title} />
-					<SmallText style={styles.addressText} text={item.address} />
+					<MediumText
+						style={styles.titleText}
+						text={item.title}
+						textProps={{ numberOfLines: 1 }}
+					/>
+					<SmallText
+						style={styles.addressText}
+						text={item.address}
+						textProps={{ numberOfLines: 1 }}
+					/>
 				</View>
 				<View style={styles.directionView}>
-					<Image style={styles.directionImg} source={Images.directionImg} resizeMode={"contain"} />
+					<Image
+						style={styles.directionImg}
+						source={Images.directionImg}
+						resizeMode={"contain"}
+					/>
 					<SmallText style={styles.dirText} text={"Direction"} />
 				</View>
 			</TouchableOpacity>
@@ -58,20 +77,21 @@ export class CardViewComp extends PureComponent<Props, State> {
 	};
 
 	componentDidUpdate(prevProps, prevState) {
-		if(prevProps.selectedItem != this.props.selectedItem) {
-			this._carousel.snapToItem(this.props.selectedItem)
+		if (prevProps.selectedIndex != this.props.selectedIndex) {
+			this._carousel.snapToItem(this.props.selectedIndex);
 		}
 	}
 
 	render() {
-		console.log("card view")
-		const {entries, setCardIndex} = this.props
+		const { entries, setCardIndex } = this.props;
 		return (
 			<Carousel
 				ref={c => {
 					this._carousel = c;
 				}}
-				onSnapToItem={slideIndex => {setCardIndex(slideIndex)}}
+				onSnapToItem={slideIndex => {
+					setCardIndex(slideIndex);
+				}}
 				contentContainerCustomStyle={{ elevation: 10, height: ScaleSampDesgHeight(84) }}
 				firstItem={0}
 				inactiveSlideScale={0.8}

@@ -5,8 +5,8 @@
  * @flow
  */
 import React, { PureComponent } from "react";
-import { StyleSheet, Image, TouchableOpacity } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import { StyleSheet, Image, View, TouchableHighlight } from "react-native";
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
 import { Images, DefaultValues, ScaleSampDesgWidth } from "../../asset";
 
 type Props = {
@@ -36,29 +36,33 @@ export class MapViewComp extends PureComponent<Props, State> {
 		this.setState({ region });
 	};
 
-	renderMarkers = (markers: Array<Object>, setCardIndex) => {
-		return markers.map(marker => (
-			<Marker key={marker.id} showsUserLocation={true} coordinate={marker.latlng}>
-				<TouchableOpacity onPress={() => {setCardIndex(marker.id)}}>
-					<Image
-						style={styles.markerImg}
-						source={
-							marker.type == DefaultValues.ATM
-								? Images.mapAtmImg
-								: marker.type == DefaultValues.USER
-								? Images.mapUserImg
-								: Images.mapBankImg
-						}
-						resizeMode={"contain"}
-					/>
-				</TouchableOpacity>
+	renderMarkers = (markers: Array<Object>, setCardIndex, selectedIndex) => {
+		return markers.map((marker, index) => (
+			<Marker
+				onPress={() => {
+					setCardIndex(index);
+				}}
+				key={marker.id}
+				showsUserLocation={true}
+				coordinate={marker.latlng}
+			>
+				<Image
+					style={index !== selectedIndex ? styles.markerImg : styles.selectedMarkerImg}
+					source={
+						marker.type == DefaultValues.ATM
+							? Images.mapAtmImg
+							: marker.type == DefaultValues.USER
+							? Images.mapUserImg
+							: Images.mapBankImg
+					}
+					resizeMode={"contain"}
+				/>
 			</Marker>
 		));
 	};
 
 	render() {
-		console.log("render map ------------------");
-		const {setCardIndex, region, markers} = this.props;
+		const { setCardIndex, region, markers, selectedIndex } = this.props;
 		return (
 			<MapView
 				provider={PROVIDER_GOOGLE}
@@ -66,7 +70,7 @@ export class MapViewComp extends PureComponent<Props, State> {
 				region={region}
 				// onRegionChange={this.onRegionChange}
 			>
-				{this.renderMarkers(markers, setCardIndex)}
+				{this.renderMarkers(markers, setCardIndex, selectedIndex)}
 			</MapView>
 		);
 	}
@@ -79,6 +83,12 @@ const styles = StyleSheet.create({
 	markerImg: {
 		width: ScaleSampDesgWidth(39),
 		height: ScaleSampDesgWidth(39),
+		overlayColor: "#00000080",
+	},
+	selectedMarkerImg: {
+		width: ScaleSampDesgWidth(45),
+		height: ScaleSampDesgWidth(45),
+		overlayColor: "#00000000",
 	},
 });
 

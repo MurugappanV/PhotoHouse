@@ -40,7 +40,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 			atms: [],
 			filter: DefaultValues.All,
 			showFilter: false,
-			selectedIndex: null
+			selectedIndex: 0,
 		};
 	}
 
@@ -49,7 +49,10 @@ export class PlaceMap extends PureComponent<Props, State> {
 		navigator.geolocation.getCurrentPosition(
 			position => {
 				if (position.coords.latitude) {
-					this.setState({ userLatitude: position.coords.latitude, userLongitude: position.coords.longitude });
+					this.setState({
+						userLatitude: position.coords.latitude,
+						userLongitude: position.coords.longitude,
+					});
 				}
 			},
 			error => console.log("position", error.message),
@@ -57,7 +60,10 @@ export class PlaceMap extends PureComponent<Props, State> {
 		);
 		this.watchID = navigator.geolocation.watchPosition(position => {
 			if (position.coords.latitude) {
-				this.setState({ userLatitude: position.coords.latitude, userLongitude: position.coords.longitude });
+				this.setState({
+					userLatitude: position.coords.latitude,
+					userLongitude: position.coords.longitude,
+				});
 			}
 		});
 	};
@@ -77,7 +83,14 @@ export class PlaceMap extends PureComponent<Props, State> {
 
 	fetchNearByPlaces = type => {
 		const { userLatitude, userLongitude, searchKey } = this.state;
-		NearByPlaceApi(userLatitude, userLongitude, type, searchKey, this.onDataFetched, this.onDataFetchFailed);
+		NearByPlaceApi(
+			userLatitude,
+			userLongitude,
+			type,
+			searchKey,
+			this.onDataFetched,
+			this.onDataFetchFailed,
+		);
 	};
 
 	onDataFetched = (type, response) => {
@@ -104,25 +117,31 @@ export class PlaceMap extends PureComponent<Props, State> {
 		let markers = [];
 		banks.forEach(bank =>
 			markers.push({
-				latlng: { latitude: bank.geometry.location.lat, longitude: bank.geometry.location.lng },
+				latlng: {
+					latitude: bank.geometry.location.lat,
+					longitude: bank.geometry.location.lng,
+				},
 				type: DefaultValues.BANK,
 				id: bank.place_id,
 			}),
 		);
 		atms.forEach(atm =>
 			markers.push({
-				latlng: { latitude: atm.geometry.location.lat, longitude: atm.geometry.location.lng },
+				latlng: {
+					latitude: atm.geometry.location.lat,
+					longitude: atm.geometry.location.lng,
+				},
 				type: DefaultValues.ATM,
 				id: atm.place_id,
 			}),
 		);
-		markers.len > 0 && this.setCardIndex(markers[0].id)
+		markers.len > 0 && this.setCardIndex(0);
 		return markers;
 	};
 
-	setCardIndex = (index) => {
-		this.setState({selectedIndex: index})
-	}
+	setCardIndex = index => {
+		this.setState({ selectedIndex: index });
+	};
 
 	getCards = (banks, atms) => {
 		let cards = [];
@@ -170,15 +189,21 @@ export class PlaceMap extends PureComponent<Props, State> {
 					autoFocus={false}
 				/>
 				<View style={styles.seperatorLine} />
-				<TouchableOpacity onPress={() => this.setState({ showFilter: true })} style={styles.filterBtn}>
-					<Image style={styles.filterImg} source={Images.filterImg} resizeMode={"contain"} />
+				<TouchableOpacity
+					onPress={() => this.setState({ showFilter: true })}
+					style={styles.filterBtn}
+				>
+					<Image
+						style={styles.filterImg}
+						source={Images.filterImg}
+						resizeMode={"contain"}
+					/>
 				</TouchableOpacity>
 			</View>
 		);
 	};
 
 	onFilterChange = (selectedFilter: string) => {
-		console.log("filter -- " , selectedFilter)
 		if (this.state.filter != selectedFilter) {
 			this.setState({ filter: selectedFilter, showFilter: false });
 		} else {
@@ -230,10 +255,12 @@ export class PlaceMap extends PureComponent<Props, State> {
 
 	componentDidUpdate(prevProps, prevState) {
 		const { filter, userLatitude, userLongitude } = this.state;
-		if(filter != prevState.filter 
-			|| userLatitude != prevState.userLatitude 
-			|| userLongitude != prevState.userLongitude) {
-				this.fetchPlaces();
+		if (
+			filter != prevState.filter ||
+			userLatitude != prevState.userLatitude ||
+			userLongitude != prevState.userLongitude
+		) {
+			this.fetchPlaces();
 		}
 	}
 
@@ -251,12 +278,27 @@ export class PlaceMap extends PureComponent<Props, State> {
 					}}
 					markers={this.getMarkers(userLatitude, userLongitude, banks, atms)}
 					setCardIndex={this.setCardIndex}
+					selectedIndex={selectedIndex}
 				/>
 				{this.renderPicker()}
 				{this.renderSearchBar()}
-				<View style={{ flex: 100 }} />
+				{/* <View style={{ flex: 100 }} /> */}
 				{(banks.length > 0 || atms.length > 0) && (
-					<CardViewComp onPress={this.onCardSelect} entries={this.getCards(banks, atms)} setCardIndex={this.setCardIndex} selectedIndex={selectedIndex}/>
+					<View
+						style={{
+							position: "absolute",
+							bottom: 0,
+							left: 0,
+							right: 0,
+						}}
+					>
+						<CardViewComp
+							onPress={this.onCardSelect}
+							entries={this.getCards(banks, atms)}
+							setCardIndex={this.setCardIndex}
+							selectedIndex={selectedIndex}
+						/>
+					</View>
 				)}
 			</View>
 		);

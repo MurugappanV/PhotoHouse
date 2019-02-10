@@ -7,7 +7,7 @@ export const PlaceRouteApi = (lat, long, placeId, success, failure) => {
 		.then(function(response) {
 			console.log("settings response", response);
 			if (response.data.routes != null) {
-				success(response.data.routes.legs[0]);
+				success(response.data.routes[0].legs[0]);
 			} else {
 				failure(response);
 			}
