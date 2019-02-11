@@ -1,42 +1,21 @@
 /**
- * Place Route
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
 import React, { PureComponent } from "react";
-import {
-	FlatList,
-	Modal,
-	View,
-	Image,
-	StyleSheet,
-	TextInput,
-	Text,
-	TouchableOpacity,
-} from "react-native";
-import {
-	StatusBarComp,
-	MediumText,
-	MapViewComp,
-	CardViewComp,
-	LoadingIndicatorComp,
-} from "../../components";
+import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StatusBarComp, MediumText, LoadingIndicatorComp } from "../../components";
 import {
 	Images,
 	Colors,
-	Metrics,
-	ScalePerctFullWidth,
 	ScalePerctFullHeight,
 	ScaleSampDesgHeight,
 	ScaleSampDesgWidth,
 	ScaleMinSampleDesg,
 	DefaultValues,
 } from "../../asset";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { PlaceRouteApi } from "../../service";
 
-type Props = {};
+type Props = { navigation: any };
 type State = {
 	placeId: string,
 	userLatitude: number,
@@ -56,13 +35,13 @@ export class Route extends PureComponent<Props, State> {
 		const type = props.navigation.getParam("type", null);
 		const name = props.navigation.getParam("name", null);
 		this.state = {
-			placeId: placeId,
+			placeId,
 			userLatitude: userLat,
 			userLongitude: userLng,
 			routes: null,
 			loading: false,
-			type: type,
-			name: name,
+			type,
+			name,
 		};
 	}
 
@@ -84,36 +63,37 @@ export class Route extends PureComponent<Props, State> {
 		);
 	};
 
-	onDataFetched = response => {
-		console.log("response", response);
+	onDataFetched = (response: any) => {
 		this.setState({ routes: response, loading: false });
 	};
 
-	onDataFetchFailed = response => {
+	onDataFetchFailed = () => {
 		this.setState({ routes: null, loading: false });
 	};
 
 	getListRoutes = (routes: any) => {
-		let listRoute = []
+		let listRoute = [];
 		try {
 			if (routes && routes.steps && routes.steps.length > 0) {
-				listRoute = routes.steps.map(step => {
+				listRoute = routes.steps.map((step: any) => {
 					const inst = step.html_instructions;
+					let image = Images.upImg;
+					if (inst.toLowerCase().includes("left")) {
+						image = Images.leftImg;
+					}
+					if (inst.toLowerCase().includes("right")) {
+						image = Images.rightImg;
+					}
 					return {
-						image: !inst.toLowerCase().includes("turn")
-							? Images.upImg
-							: inst.toLowerCase().includes("left")
-							? Images.leftImg
-							: Images.rightImg,
-						title: "this.getDataFromHtml(inst)",
+						image,
+						title: this.getDataFromHtml(inst),
 						distance: step.distance.text,
 					};
 				});
 			}
-		} catch(error) {
-			console.log(error)
+		} catch (error) {
+			console.log(error);
 		}
-		console.log("display ", listRoute)
 		return listRoute;
 	};
 
@@ -126,7 +106,7 @@ export class Route extends PureComponent<Props, State> {
 
 	getFooter = (routes: any, type: string, name: string) => {
 		return {
-			image: type == DefaultValues.ATM ? Images.atmImg : Images.bankImg,
+			image: type === DefaultValues.ATM ? Images.atmImg : Images.bankImg,
 			title: name,
 			address: routes ? routes.end_address : "",
 		};
@@ -134,17 +114,18 @@ export class Route extends PureComponent<Props, State> {
 
 	getDataFromHtml = (data: string) => {
 		try {
-			let text = data ? data.split("<b>").join('') : "";
-			text = text.split("</b>").join('')
-			text = text.split("</div>").join('')
-			while (text.indexOf("<div", 0) != -1) {
-				let index = text.indexOf("<div", 0);
-				let endIndex = text.indexOf(">", index);
-				text.replace(text.substring(index, endIndex + 1), ", ");
+			let text = data ? data.split("<b>").join("") : "";
+			text = text.split("</b>").join("");
+			text = text.split("</div>").join("");
+			text = text.split("&nbsp;").join("");
+			while (text.indexOf("<div", 0) !== -1) {
+				const index = text.indexOf("<div", 0);
+				const endIndex = text.indexOf(">", index);
+				text = text.replace(text.substring(index, endIndex + 1), ", ");
 			}
-			return text
-		} catch(error) {
-			console.log("error", error)
+			return text;
+		} catch (error) {
+			console.log("error", error);
 		}
 		return "";
 	};
@@ -162,7 +143,7 @@ export class Route extends PureComponent<Props, State> {
 						overlayColor={Colors.bodyPrimaryLight}
 						style={styles.backImg}
 						source={Images.backImg}
-						resizeMode={"contain"}
+						resizeMode="contain"
 					/>
 				</TouchableOpacity>
 				<View style={styles.headerTextContainer}>
@@ -177,11 +158,11 @@ export class Route extends PureComponent<Props, State> {
 		);
 	};
 
-	renderListItem = item => {
+	renderListItem = (item: any) => {
 		return (
 			<View style={styles.listItemContainer}>
 				<View style={styles.itemImgContainer}>
-					<Image style={styles.itemImg} source={item.image} resizeMode={"contain"} />
+					<Image style={styles.itemImg} source={item.image} resizeMode="contain" />
 				</View>
 				<View style={styles.itemViewContainer}>
 					<Text style={styles.itemTitleText}>{item.title}</Text>
@@ -195,11 +176,11 @@ export class Route extends PureComponent<Props, State> {
 		return <View style={styles.listSeperator} />;
 	};
 
-	renderList = (listData, loading) => {
+	renderList = (listData: Array, loading: boolean) => {
 		return (
 			<FlatList
 				style={styles.listcontainer}
-				renderItem={({ item, index }) => this.renderListItem(item)}
+				renderItem={({ item }) => this.renderListItem(item)}
 				ItemSeparatorComponent={this.renderSeperator}
 				ListEmptyComponent={() => this.renderEmpty(loading)}
 				ListFooterComponent={() => this.renderListFooter(loading)}
@@ -209,31 +190,35 @@ export class Route extends PureComponent<Props, State> {
 		);
 	};
 
-	renderListFooter = loading => {
+	renderListFooter = (loading: boolean) => {
 		if (loading) {
 			return <LoadingIndicatorComp style={styles.footer} />;
 		}
 		return null;
 	};
 
-	renderEmpty = loading => {
+	renderEmpty = (loading: boolean) => {
 		if (!loading) {
 			return (
 				<View style={styles.empty}>
-					<MediumText style={styles.textNoDocument} text={"No documents found"} />
+					<MediumText style={styles.textNoDocument} text="No documents found" />
 				</View>
 			);
 		}
 		return null;
 	};
 
-	renderFooter = footerData => {
+	renderFooter = (footerData: any) => {
 		return (
 			<View style={styles.footerContainer}>
-				<Image style={styles.footerImg} source={footerData.image} resizeMode={"contain"} />
+				<Image style={styles.footerImg} source={footerData.image} resizeMode="contain" />
 				<View style={styles.footerViewContainer}>
-					<Text style={styles.footerTitleText} numberOfLines={1}>{footerData.title}</Text>
-					<Text style={styles.footerAddressText} numberOfLines={2}>{footerData.address}</Text>
+					<Text style={styles.footerTitleText} numberOfLines={1}>
+						{footerData.title}
+					</Text>
+					<Text style={styles.footerAddressText} numberOfLines={2}>
+						{footerData.address}
+					</Text>
 				</View>
 			</View>
 		);
@@ -242,8 +227,7 @@ export class Route extends PureComponent<Props, State> {
 	render() {
 		const { routes, type, name, loading } = this.state;
 		const { navigation } = this.props;
-		console.log("route state", this.state);
-		this.getListRoutes(routes)
+		this.getListRoutes(routes);
 		return (
 			<View style={styles.container}>
 				<StatusBarComp />
@@ -302,7 +286,7 @@ const styles = StyleSheet.create({
 	listItemContainer: {
 		paddingVertical: ScaleSampDesgHeight(20),
 		flexDirection: "row",
-		alignItems: "center"
+		alignItems: "center",
 	},
 	itemImgContainer: {
 		width: ScaleSampDesgWidth(60),
@@ -350,7 +334,7 @@ const styles = StyleSheet.create({
 		height: ScaleSampDesgHeight(90),
 		flexDirection: "row",
 		alignItems: "center",
-		marginRight: ScaleSampDesgWidth(20)
+		marginRight: ScaleSampDesgWidth(20),
 	},
 	footerImg: {
 		width: ScaleMinSampleDesg(43, 43),
@@ -362,17 +346,17 @@ const styles = StyleSheet.create({
 		paddingTop: ScaleSampDesgHeight(17),
 		alignItems: "flex-start",
 		justifyContent: "flex-start",
-		flexWrap: 'wrap',
-		flex: 1
+		flexWrap: "wrap",
+		flex: 1,
 	},
 	footerTitleText: {
 		fontSize: 17,
-		flexWrap: 'wrap',
+		flexWrap: "wrap",
 	},
 	footerAddressText: {
 		fontSize: 14,
 		color: Colors.bodySecondaryLight,
-		flexWrap: 'wrap',
+		flexWrap: "wrap",
 		flex: 1,
 	},
 });

@@ -10,21 +10,21 @@ import { StatusBar, Platform } from "react-native";
 import { Colors } from "../../asset";
 
 type Props = {
-	style?: number | Object | Array<number>,
 	barStyle?: string,
 };
 
 export function StatusBarComp(props: Props) {
 	return (
 		<StatusBar
-			backgroundColor={Platform.OS == "ios" ? Colors.bgTransparent : Colors.bgSemiTransparent}
+			backgroundColor={
+				Platform.OS === "ios" ? Colors.bgTransparent : Colors.bgSemiTransparent
+			}
 			barStyle={props.barStyle}
-			translucent={true}
+			translucent
 		/>
 	);
 }
 
 StatusBarComp.defaultProps = {
-	style: undefined,
 	barStyle: "default",
 };

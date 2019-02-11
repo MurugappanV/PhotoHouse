@@ -1,1 +1,1 @@
-export {SmallText, LargeText, MediumText, ExtraLargeText} from './Text'
+export { SmallText, LargeText, MediumText, ExtraLargeText } from "./Text";

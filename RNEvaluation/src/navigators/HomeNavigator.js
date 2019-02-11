@@ -1,22 +1,11 @@
 /**
- * Home Navigator , stacks between map and details
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
-import React, { PureComponent } from "react";
+import React from "react";
 import { createStackNavigator } from "react-navigation";
 import { PlaceMapCont, RouteCont } from "../containers";
 
-type Props = {};
-
-export class HomeNavigator extends PureComponent<Props> {
-	render() {
-		return <Stack />;
-	}
-}
-
-const Stack = createStackNavigator(
+const HomeNavigator = createStackNavigator(
 	{
 		Map: { screen: PlaceMapCont },
 		Route: { screen: RouteCont },
@@ -27,3 +16,5 @@ const Stack = createStackNavigator(
 		}),
 	},
 );
+
+export default HomeNavigator;

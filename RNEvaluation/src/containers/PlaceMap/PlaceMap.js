@@ -1,7 +1,4 @@
 /**
- * Place Map
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
 import React, { PureComponent } from "react";
@@ -11,17 +8,14 @@ import {
 	Images,
 	Colors,
 	Metrics,
-	ScalePerctFullWidth,
-	ScalePerctFullHeight,
 	ScaleSampDesgHeight,
 	ScaleSampDesgWidth,
 	ScaleMinSampleDesg,
 	DefaultValues,
 } from "../../asset";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { NearByPlaceApi } from "../../service";
 
-type Props = {};
+type Props = { navigation: any };
 type State = {
 	userLatitude: number,
 	userLongitude: number,
@@ -47,7 +41,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 	componentDidMount = () => {
 		this.fetchPlaces();
 		navigator.geolocation.getCurrentPosition(
-			position => {
+			(position: any) => {
 				if (position.coords.latitude) {
 					this.setState({
 						userLatitude: position.coords.latitude,
@@ -58,7 +52,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 			error => console.log("position", error.message),
 			{ enableHighAccuracy: true },
 		);
-		this.watchID = navigator.geolocation.watchPosition(position => {
+		this.watchID = navigator.geolocation.watchPosition((position: any) => {
 			if (position.coords.latitude) {
 				this.setState({
 					userLatitude: position.coords.latitude,
@@ -68,20 +62,31 @@ export class PlaceMap extends PureComponent<Props, State> {
 		});
 	};
 
+	componentDidUpdate(prevProps, prevState) {
+		const { filter, userLatitude, userLongitude } = this.state;
+		if (
+			filter !== prevState.filter ||
+			userLatitude !== prevState.userLatitude ||
+			userLongitude !== prevState.userLongitude
+		) {
+			this.fetchPlaces();
+		}
+	}
+
 	fetchPlaces = () => {
-		if (this.state.filter == DefaultValues.All) {
+		if (this.state.filter === DefaultValues.All) {
 			this.fetchNearByPlaces(DefaultValues.ATM);
 			this.fetchNearByPlaces(DefaultValues.BANK);
-		} else if (this.state.filter == DefaultValues.ATM) {
+		} else if (this.state.filter === DefaultValues.ATM) {
 			this.fetchNearByPlaces(DefaultValues.ATM);
 			this.setState({ banks: [] });
-		} else if (this.state.filter == DefaultValues.BANK) {
+		} else if (this.state.filter === DefaultValues.BANK) {
 			this.fetchNearByPlaces(DefaultValues.BANK);
 			this.setState({ atms: [] });
 		}
 	};
 
-	fetchNearByPlaces = type => {
+	fetchNearByPlaces = (type: string) => {
 		const { userLatitude, userLongitude, searchKey } = this.state;
 		NearByPlaceApi(
 			userLatitude,
@@ -93,16 +98,16 @@ export class PlaceMap extends PureComponent<Props, State> {
 		);
 	};
 
-	onDataFetched = (type, response) => {
-		if (type == DefaultValues.BANK) {
+	onDataFetched = (type: string, response: any) => {
+		if (type === DefaultValues.BANK) {
 			this.setState({ banks: response });
 		} else {
 			this.setState({ atms: response });
 		}
 	};
 
-	onDataFetchFailed = (type, response) => {
-		if (type == DefaultValues.BANK) {
+	onDataFetchFailed = (type: string) => {
+		if (type === DefaultValues.BANK) {
 			this.setState({ banks: [] });
 		} else {
 			this.setState({ atms: [] });
@@ -114,38 +119,43 @@ export class PlaceMap extends PureComponent<Props, State> {
 	};
 
 	getMarkers = (banks, atms) => {
-		let markers = [];
-		console.log("banks atms ", banks, atms)
-		banks && banks.forEach(bank =>
-			markers.push({
-				latlng: {
-					latitude: bank.geometry.location.lat,
-					longitude: bank.geometry.location.lng,
-				},
-				type: DefaultValues.BANK,
-				id: bank.place_id,
-			}),
-		);
-		atms && atms.forEach(atm =>
-			markers.push({
-				latlng: {
-					latitude: atm.geometry.location.lat,
-					longitude: atm.geometry.location.lng,
-				},
-				type: DefaultValues.ATM,
-				id: atm.place_id,
-			}),
-		);
-		markers.len > 0 && this.setCardIndex(0);
+		const markers = [];
+		if (banks) {
+			banks.forEach(bank =>
+				markers.push({
+					latlng: {
+						latitude: bank.geometry.location.lat,
+						longitude: bank.geometry.location.lng,
+					},
+					type: DefaultValues.BANK,
+					id: bank.place_id,
+				}),
+			);
+		}
+		if (atms) {
+			atms.forEach(atm =>
+				markers.push({
+					latlng: {
+						latitude: atm.geometry.location.lat,
+						longitude: atm.geometry.location.lng,
+					},
+					type: DefaultValues.ATM,
+					id: atm.place_id,
+				}),
+			);
+		}
+		if (markers.len > 0) {
+			this.setCardIndex(0);
+		}
 		return markers;
 	};
 
-	setCardIndex = index => {
+	setCardIndex = (index: number) => {
 		this.setState({ selectedIndex: index });
 	};
 
 	getCards = (banks, atms) => {
-		let cards = [];
+		const cards = [];
 		banks.forEach(bank =>
 			cards.push({
 				title: bank.name,
@@ -166,23 +176,34 @@ export class PlaceMap extends PureComponent<Props, State> {
 	};
 
 	onChangeSearchText = (text: string) => {
-		if (this.state.searchKey != text) {
+		if (this.state.searchKey !== text) {
 			this.setState({ searchKey: text });
 		}
+	};
+
+	renderFilterButton = () => {
+		return (
+			<TouchableOpacity
+				onPress={() => this.setState({ showFilter: true })}
+				style={styles.filterBtn}
+			>
+				<Image style={styles.filterImg} source={Images.filterImg} resizeMode="contain" />
+			</TouchableOpacity>
+		);
 	};
 
 	renderSearchBar = () => {
 		return (
 			<View style={styles.searchBar}>
-				<Image style={styles.searchImg} source={Images.searchImg} resizeMode={"contain"} />
+				<Image style={styles.searchImg} source={Images.searchImg} resizeMode="contain" />
 				<TextInput
 					style={styles.searchInput}
 					onChangeText={text => this.onChangeSearchText(text)}
-					underlineColorAndroid="transparent"
-					selectionColor="black"
-					returnKeyType={"search"}
-					placeholder={"Search for ATM/Bank"}
-					textContentType={"sublocality"}
+					underlineColorAndroid={Colors.bgTransparent}
+					selectionColor={Colors.bodyPrimaryDark}
+					returnKeyType="search"
+					placeholder="Search for ATM/Bank"
+					textContentType="sublocality"
 					secureTextEntry={false}
 					placeholderTextColor={Colors.bodySecondaryLight}
 					value={this.state.searchKey}
@@ -190,22 +211,13 @@ export class PlaceMap extends PureComponent<Props, State> {
 					autoFocus={false}
 				/>
 				<View style={styles.seperatorLine} />
-				<TouchableOpacity
-					onPress={() => this.setState({ showFilter: true })}
-					style={styles.filterBtn}
-				>
-					<Image
-						style={styles.filterImg}
-						source={Images.filterImg}
-						resizeMode={"contain"}
-					/>
-				</TouchableOpacity>
+				{this.renderFilterButton()}
 			</View>
 		);
 	};
 
 	onFilterChange = (selectedFilter: string) => {
-		if (this.state.filter != selectedFilter) {
+		if (this.state.filter !== selectedFilter) {
 			this.setState({ filter: selectedFilter, showFilter: false });
 		} else {
 			this.setState({ showFilter: false });
@@ -226,8 +238,8 @@ export class PlaceMap extends PureComponent<Props, State> {
 			placeId: id,
 			userLat: userLatitude,
 			userLng: userLongitude,
-			type: type,
-			name: name,
+			type,
+			name,
 		});
 	};
 
@@ -235,7 +247,7 @@ export class PlaceMap extends PureComponent<Props, State> {
 		return (
 			<Modal
 				animationType="fade"
-				transparent={true}
+				transparent
 				visible={this.state.showFilter}
 				onRequestClose={() => {
 					this.setState({ showFilter: false });
@@ -253,17 +265,6 @@ export class PlaceMap extends PureComponent<Props, State> {
 			</Modal>
 		);
 	};
-
-	componentDidUpdate(prevProps, prevState) {
-		const { filter, userLatitude, userLongitude } = this.state;
-		if (
-			filter != prevState.filter ||
-			userLatitude != prevState.userLatitude ||
-			userLongitude != prevState.userLongitude
-		) {
-			this.fetchPlaces();
-		}
-	}
 
 	render() {
 		const { userLatitude, userLongitude, banks, atms, selectedIndex } = this.state;

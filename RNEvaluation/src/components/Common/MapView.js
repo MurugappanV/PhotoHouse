@@ -1,63 +1,48 @@
 /**
- * Map view component
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
 import React, { PureComponent } from "react";
-import { StyleSheet, Image, View, TouchableHighlight } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
+import { StyleSheet, Image } from "react-native";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { Images, DefaultValues, ScaleSampDesgWidth } from "../../asset";
 
 type Props = {
-	region: any,
 	markers: Array<Object>,
+	setCardIndex: Function,
+	selectedIndex: number,
+	region: any,
 };
 
-type State = {
-	region: any,
-	markers: Array<Object>,
-};
+type State = {};
 
 export class MapViewComp extends PureComponent<Props, State> {
-	constructor(props: Props) {
-		super(props);
-		// this.state = { region: props.region, markers: props.markers };
-	}
-
-	// static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-	// 	if (nextProps.markers != prevState.markers) {
-	// 		return { markers: nextProps.markers };
-	// 	}
-	// 	return null;
-	// }
-
-	onRegionChange = (region: any) => {
-		this.setState({ region });
-	};
-
 	renderMarkers = (markers: Array<Object>, setCardIndex, selectedIndex) => {
-		return markers.map((marker, index) => (
-			<Marker
-				onPress={() => {
-					setCardIndex(index);
-				}}
-				key={marker.id}
-				coordinate={marker.latlng}
-			>
-				<Image
-					style={index !== selectedIndex ? styles.markerImg : styles.selectedMarkerImg}
-					source={
-						marker.type == DefaultValues.ATM
-							? Images.mapAtmImg
-							: marker.type == DefaultValues.USER
-							? Images.mapUserImg
-							: Images.mapBankImg
-					}
-					resizeMode={"contain"}
-				/>
-			</Marker>
-		));
+		return markers.map((marker, index) => {
+			let image = Images.mapUserImg;
+			if (marker.type === DefaultValues.ATM) {
+				image = Images.mapAtmImg;
+			}
+			if (marker.type === DefaultValues.BANK) {
+				image = Images.mapBankImg;
+			}
+			return (
+				<Marker
+					onPress={() => {
+						setCardIndex(index);
+					}}
+					key={marker.id}
+					coordinate={marker.latlng}
+				>
+					<Image
+						style={
+							index !== selectedIndex ? styles.markerImg : styles.selectedMarkerImg
+						}
+						source={image}
+						resizeMode="contain"
+					/>
+				</Marker>
+			);
+		});
 	};
 
 	render() {
@@ -67,12 +52,11 @@ export class MapViewComp extends PureComponent<Props, State> {
 				provider={PROVIDER_GOOGLE}
 				style={styles.map}
 				region={region}
-				showsUserLocation={true}
-				followsUserLocation={true}
+				showsUserLocation
+				followsUserLocation
 				showsMyLocationButton={false}
 				showsCompass={false}
 				showsPointsOfInterest={false}
-				// onRegionChange={this.onRegionChange}
 			>
 				{this.renderMarkers(markers, setCardIndex, selectedIndex)}
 			</MapView>

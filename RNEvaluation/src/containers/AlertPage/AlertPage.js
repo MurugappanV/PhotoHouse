@@ -1,23 +1,25 @@
 /**
- * Connection failure page
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
 import React, { PureComponent } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { StatusBarComp, MediumText } from "../../components";
-import { Images, Colors, ScalePerctFullWidth, ScalePerctFullHeight } from "../../asset";
+import { Images, Colors, ScalePerctFullWidth } from "../../asset";
 
 type Props = {};
 export class AlertPage extends PureComponent<Props> {
+	constructor() {
+		super();
+		this.state = {};
+	}
+
 	render() {
 		return (
 			<View style={styles.container}>
 				<StatusBarComp />
 				<View style={styles.subContainer}>
 					<Image style={styles.image} source={Images.wifiImg} />
-					<MediumText style={styles.text} text={"No network connection"} />
+					<MediumText style={styles.text} text="No network connection" />
 				</View>
 			</View>
 		);

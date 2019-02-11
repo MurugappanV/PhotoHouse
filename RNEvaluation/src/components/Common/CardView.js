@@ -6,6 +6,7 @@
  */
 import React, { PureComponent } from "react";
 import { StyleSheet, Image, View, TouchableOpacity } from "react-native";
+import Carousel from "react-native-snap-carousel";
 import {
 	Images,
 	Colors,
@@ -15,31 +16,24 @@ import {
 	ScaleSampDesgHeight,
 } from "../../asset";
 import { MediumText, SmallText } from "../Texts";
-import Carousel from "react-native-snap-carousel";
 
 type Props = {
 	entries: Array<Object>,
 	onPress: Function,
+	selectedIndex: number,
+	setCardIndex: Function,
 };
 
-type State = {
-	entries: Array<Object>,
-};
+type State = {};
 
 export class CardViewComp extends PureComponent<Props, State> {
-	constructor(props: Props) {
-		super(props);
-		// this.state = { entries: props.entries };
+	componentDidUpdate(prevProps) {
+		if (prevProps.selectedIndex !== this.props.selectedIndex) {
+			this.carousel.snapToItem(this.props.selectedIndex);
+		}
 	}
 
-	// static getDerivedStateFromProps(nextProps, prevState) {
-	// 	if (nextProps.entries != prevState.entries) {
-	// 		return { entries: nextProps.entries };
-	// 	}
-	// 	return null;
-	// }
-
-	renderItem = (item, index) => {
+	renderItem = (item: any) => {
 		return (
 			<TouchableOpacity
 				onPress={() => {
@@ -49,8 +43,8 @@ export class CardViewComp extends PureComponent<Props, State> {
 			>
 				<Image
 					style={styles.iconImg}
-					source={item.type == DefaultValues.ATM ? Images.atmImg : Images.bankImg}
-					resizeMode={"contain"}
+					source={item.type === DefaultValues.ATM ? Images.atmImg : Images.bankImg}
+					resizeMode="contain"
 				/>
 				<View style={styles.textView}>
 					<MediumText
@@ -68,28 +62,22 @@ export class CardViewComp extends PureComponent<Props, State> {
 					<Image
 						style={styles.directionImg}
 						source={Images.directionImg}
-						resizeMode={"contain"}
+						resizeMode="contain"
 					/>
-					<SmallText style={styles.dirText} text={"Direction"} />
+					<SmallText style={styles.dirText} text="Direction" />
 				</View>
 			</TouchableOpacity>
 		);
 	};
 
-	componentDidUpdate(prevProps, prevState) {
-		if (prevProps.selectedIndex != this.props.selectedIndex) {
-			this._carousel.snapToItem(this.props.selectedIndex);
-		}
-	}
-
 	render() {
 		const { entries, setCardIndex } = this.props;
 		return (
 			<Carousel
-				ref={c => {
-					this._carousel = c;
+				ref={(c: any) => {
+					this.carousel = c;
 				}}
-				onSnapToItem={slideIndex => {
+				onSnapToItem={(slideIndex: number) => {
 					setCardIndex(slideIndex);
 				}}
 				contentContainerCustomStyle={{ elevation: 10, height: ScaleSampDesgHeight(84) }}
@@ -104,7 +92,7 @@ export class CardViewComp extends PureComponent<Props, State> {
 				renderItem={({ item, index }) => this.renderItem(item, index)}
 				sliderWidth={ScaleSampDesgWidth(360)}
 				itemWidth={ScaleSampDesgWidth(330)}
-				layout={"default"}
+				layout="default"
 			/>
 		);
 	}

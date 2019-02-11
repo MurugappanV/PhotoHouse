@@ -1,14 +1,10 @@
 /**
- * Loading indicator component with large spinner
- * Author : Murugappan V
- * Date   : 22 Oct 2018
  * @flow
  */
 
 import React from "react";
 import { StyleSheet, ActivityIndicator, View } from "react-native";
-import { Colors, Metrics, ScaleSampDesgHeight, ScaleSampDesgWidth } from "../../asset";
-import { LargeText } from "../Texts";
+import { Colors } from "../../asset";
 
 type Props = {
 	style?: number | Object | Array<number>,
