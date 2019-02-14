@@ -1,7 +1,4 @@
 /**
- * Map view component
- * Author : Murugappan V
- * Date   : 10 Nov 2018
  * @flow
  */
 import React, { PureComponent } from "react";

@@ -1,7 +1,4 @@
 /**
- * Status bar
- * Author : Murugappan V
- * Date   : 4 Oct 2018
  * @flow
  */
 

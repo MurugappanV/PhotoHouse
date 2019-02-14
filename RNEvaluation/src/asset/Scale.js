@@ -1,8 +1,4 @@
 /**
- * Scale % to full device respective width and height
- * Scale SampleDesign width/height to device respective width and height
- * Author : Murugappan V
- * Date   : 9 Sep 2018
  * @flow
  */
 

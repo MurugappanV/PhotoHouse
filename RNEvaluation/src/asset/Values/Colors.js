@@ -1,7 +1,4 @@
 /**
- * App colors
- * Author : Murugappan V
- * Date   : 9 Sep 2018
  * @flow
  */
 

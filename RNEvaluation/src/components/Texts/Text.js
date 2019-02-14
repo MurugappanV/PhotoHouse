@@ -1,7 +1,4 @@
 /**
- * Different types of Text
- * Author : Murugappan V
- * Date   : 9 Sep 2018
  * @flow
  */
 
@@ -17,7 +14,10 @@ type Props = {
 
 export function ExtraLargeText(props: Props) {
 	return (
-		<Text {...props.textProps} style={StyleSheet.flatten([styles.extralargeText, props.style])}>
+		<Text
+			{...props.textProps}
+			style={StyleSheet.flatten([styles.extralargeText, props.style])}
+		>
 			{props.text}
 		</Text>
 	);
