@@ -2,7 +2,15 @@
  * @flow
  */
 import React, { PureComponent } from "react";
-import { Modal, View, Image, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+	Modal,
+	Platform,
+	View,
+	Image,
+	StyleSheet,
+	TextInput,
+	TouchableOpacity,
+} from "react-native";
 import { StatusBarComp, MediumText, MapViewComp, CardViewComp } from "../../components";
 import {
 	Images,
@@ -318,7 +326,10 @@ const styles = StyleSheet.create({
 		height: ScaleSampDesgHeight(46),
 		marginLeft: ScaleSampDesgWidth(15),
 		marginRight: ScaleSampDesgWidth(15),
-		marginTop: ScaleSampDesgHeight(40),
+		marginTop:
+			Platform.OS === "android" && Platform.Version < 21
+				? ScaleSampDesgHeight(15)
+				: ScaleSampDesgHeight(40),
 		backgroundColor: Colors.bgPrimaryLight,
 		borderRadius: Metrics.SMOOTH_CORNER,
 		flexDirection: "row",

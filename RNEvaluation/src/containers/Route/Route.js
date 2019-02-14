@@ -2,7 +2,7 @@
  * @flow
  */
 import React, { PureComponent } from "react";
-import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { FlatList, Platform, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { StatusBarComp, MediumText, LoadingIndicatorComp } from "../../components";
 import {
 	Images,
@@ -248,9 +248,9 @@ const styles = StyleSheet.create({
 	},
 	headerContainer: {
 		// width: ScaleSampDesgWidth(280),
-		height: ScaleSampDesgHeight(90),
+		height: Platform.OS === "android" && Platform.Version < 21 ? 56 : 80,
 		backgroundColor: Colors.bgSecondaryDark,
-		paddingTop: ScaleSampDesgHeight(20),
+		paddingTop: Platform.OS === "android" && Platform.Version < 21 ? 0 : 24,
 		flexDirection: "row",
 		alignItems: "center",
 	},
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
 		overlayColor: Colors.bodyPrimaryLight,
 	},
 	headerTextContainer: {
-		paddingTop: ScaleSampDesgHeight(8),
+		paddingTop: 4,
 		flex: 1,
 	},
 	headerTimeText: {
